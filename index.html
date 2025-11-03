@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do List - by Peace</title>
+  </head>
+  <body>
+    <!-- Page de connexion/inscription -->
+    <div id="auth-screen" class="auth-screen">
+      <div class="auth-container">
+        <h1 class="auth-title">📋 To-Do List – by Peace</h1>
+        <div class="auth-tabs">
+          <button id="login-tab" class="auth-tab active">Connexion</button>
+          <button id="register-tab" class="auth-tab">Inscription</button>
+        </div>
+        <div id="auth-form" class="auth-form">
+          <div id="auth-error" class="auth-error" style="display: none;"></div>
+          <input type="text" id="auth-username" class="auth-input" placeholder="Nom d'utilisateur" />
+          <input type="password" id="auth-password" class="auth-input" placeholder="Mot de passe" />
+          <button id="auth-submit" class="btn-primary auth-btn">Se connecter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Application principale -->
+    <div id="app" style="display: none;">
+      <header class="app-header">
+        <h1 class="app-title">📋 To-Do List – by Peace</h1>
+        <div class="header-actions">
+          <span id="current-user" class="current-user"></span>
+          <button id="logout-btn" class="btn-secondary" title="Déconnexion">Déconnexion</button>
+          <button id="compact-toggle" class="icon-btn" title="Mode compact">
+            <span id="compact-icon">📄</span>
+          </button>
+          <button id="theme-toggle" class="icon-btn" title="Changer le thème">
+            <span class="theme-icon">🌙</span>
+          </button>
+          <button id="stats-btn" class="icon-btn" title="Statistiques">
+            <span>📊</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="container">
+        <div class="progress-section">
+          <div class="progress-info">
+            <span id="task-counter">0 tâches</span>
+            <span id="progress-percent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <div class="input-section">
+          <input
+            type="text"
+            id="task-input"
+            placeholder="Ajouter une nouvelle tâche..."
+            class="task-input"
+          />
+          <div class="task-options">
+            <select id="priority-select" class="select-input">
+              <option value="low">Priorité basse</option>
+              <option value="medium" selected>Priorité moyenne</option>
+              <option value="high">Priorité haute</option>
+            </select>
+            <input type="text" id="category-input" placeholder="Catégorie" class="category-input" />
+            <div class="date-input-wrapper">
+              <label for="start-date-input" class="date-label">📅 Date de début</label>
+              <input type="date" id="start-date-input" class="date-input" />
+            </div>
+            <div class="date-input-wrapper">
+              <label for="due-date-input" class="date-label">📅 Date de fin (échéance)</label>
+              <input type="date" id="due-date-input" class="date-input" />
+            </div>
+            <button id="add-task-btn" class="btn-primary">Ajouter la tâche</button>
+          </div>
+          
+          <!-- Section pour ajouter une description/notes -->
+          <div class="description-section">
+            <div class="description-header">
+              <span class="description-label">📝 Description / Notes (optionnel) :</span>
+              <button type="button" id="toggle-description" class="btn-toggle-description">+ Ajouter une description</button>
+            </div>
+            <div id="description-container" class="description-container" style="display: none;">
+              <textarea
+                id="task-description-input"
+                class="task-description-input"
+                placeholder="Ajoutez des notes détaillées, des instructions, ou toute autre information utile pour cette tâche..."
+                rows="4"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Section pour ajouter des sous-tâches avant la création -->
+          <div class="subtasks-creation-section">
+            <div class="subtasks-creation-header">
+              <span class="subtasks-creation-label">Sous-tâches (optionnel) :</span>
+              <button type="button" id="toggle-subtasks" class="btn-toggle-subtasks">+ Ajouter une sous-tâche</button>
+            </div>
+            <div id="subtasks-creation-container" class="subtasks-creation-container" style="display: none;">
+              <div id="subtasks-creation-list" class="subtasks-creation-list"></div>
+              <div class="subtask-input-group-new">
+                <input
+                  type="text"
+                  id="new-subtask-input"
+                  class="subtask-input-new"
+                  placeholder="Nom de la sous-tâche..."
+                />
+                <button type="button" id="add-subtask-btn" class="subtask-add-btn-new">Ajouter</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls-section">
+          <div class="search-box">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Rechercher..."
+              class="search-input"
+            />
+          </div>
+
+          <div class="filters">
+            <select id="filter-status" class="filter-select">
+              <option value="all">Toutes</option>
+              <option value="active">En cours</option>
+              <option value="completed">Terminées</option>
+            </select>
+
+            <select id="filter-category" class="filter-select">
+              <option value="all">Toutes catégories</option>
+            </select>
+
+            <select id="sort-by" class="filter-select">
+              <option value="created">Date de création</option>
+              <option value="start">Date de début</option>
+              <option value="due">Date de fin</option>
+              <option value="priority">Priorité</option>
+            </select>
+          </div>
+
+          <div class="action-buttons">
+            <button id="export-json" class="btn-secondary">Export JSON</button>
+            <button id="export-csv" class="btn-secondary">Export CSV</button>
+            <button id="import-btn" class="btn-secondary">Import</button>
+            <button id="backup-btn" class="btn-secondary" title="Gérer les backups">💾 Backups</button>
+            <input type="file" id="import-file" accept=".json,.csv" style="display: none;" />
+          </div>
+        </div>
+
+        <div id="tasks-container" class="tasks-container"></div>
+      </div>
+    </div>
+
+    <div id="stats-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Statistiques</h2>
+        <div id="stats-content"></div>
+      </div>
+    </div>
+
+    <div id="backup-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Gestion des Backups</h2>
+        <div id="backup-content">
+          <p style="margin-bottom: 1rem; color: var(--text-secondary);">
+            Les backups sont créés automatiquement chaque jour. Les 7 derniers backups sont conservés.
+          </p>
+          <div id="backups-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="edit-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Éditer la tâche</h2>
+        <div class="edit-form">
+          <input type="text" id="edit-title" class="edit-input" placeholder="Titre de la tâche" />
+          <label for="edit-description" class="form-label">📝 Description / Notes :</label>
+          <textarea
+            id="edit-description"
+            class="edit-textarea"
+            placeholder="Ajoutez des notes détaillées, des instructions, ou toute autre information utile..."
+            rows="4"
+          ></textarea>
+          <select id="edit-priority" class="select-input">
+            <option value="low">Priorité basse</option>
+            <option value="medium">Priorité moyenne</option>
+            <option value="high">Priorité haute</option>
+          </select>
+          <input type="text" id="edit-category" class="edit-input" placeholder="Catégorie" />
+          <div class="date-input-wrapper">
+            <label for="edit-start-date" class="date-label">📅 Date de début</label>
+            <input type="date" id="edit-start-date" class="date-input" />
+          </div>
+          <div class="date-input-wrapper">
+            <label for="edit-due-date" class="date-label">📅 Date de fin (échéance)</label>
+            <input type="date" id="edit-due-date" class="date-input" />
+          </div>
+          <label class="checkbox-label">
+            <input type="checkbox" id="edit-pinned" />
+            <span>Épingler cette tâche</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="edit-recurring" />
+            <span>Tâche récurrente</span>
+          </label>
+          <select id="edit-recurrence" class="select-input" style="display: none;">
+            <option value="daily">Quotidienne</option>
+            <option value="weekly">Hebdomadaire</option>
+            <option value="monthly">Mensuelle</option>
+          </select>
+          <div class="reminders-section">
+            <label class="form-label">🔔 Rappels personnalisés (optionnel) :</label>
+            <div class="reminders-options">
+              <label class="checkbox-label">
+                <input type="checkbox" id="edit-reminder-1week" />
+                <span>1 semaine avant</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="edit-reminder-3days" />
+                <span>3 jours avant</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="edit-reminder-24h" />
+                <span>24 heures avant</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="edit-reminder-1h" />
+                <span>1 heure avant</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="edit-reminder-start" />
+                <span>Rappel date de début</span>
+              </label>
+            </div>
+          </div>
+          <button id="save-edit" class="btn-primary">Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
